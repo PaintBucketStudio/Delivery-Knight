@@ -1,0 +1,847 @@
+
+import java.awt.*;
+import java.util.Scanner;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.*;import
+java.util.ArrayList;    import static java.lang.Math.*;
+import javax.swing.JLabel;
+import sun.audio.*;
+import java.io.*;
+import java.applet.*;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.lang.String;
+public class Player
+{
+    //VARIABLES
+
+    private int lives=10;
+
+    //WINNER
+    private int winner=0;
+    //POSITION
+    private int x;//creates a private variable for the player's x position
+    private int y;//creates a private variable for the player's y position
+    private int xCenter;
+    private int yCenter;
+    private int face=0;
+
+    //IMAGE
+    private String image;
+    private JLabel lifeDisplay;
+
+    //SHAPE
+    private int a;
+    private int b;
+    private int c;
+    private int d;
+
+    //LEFT RIGHT MOVEMENT
+    private boolean right = false;
+    private boolean left = false;
+    private boolean crouch=false;
+    private int speedBoost=0;
+
+    //JUMP AND KNOCKBACK RELATED MECHANICS
+    private boolean goingUp=false;
+    private boolean jump=false;
+    private int velocity=-12;
+    private double reducer=0;
+    private boolean still=true;
+    private boolean land=false;
+    private boolean midAir=true;
+    private int knockBack=0;
+    private int knockBackVelocity=12;
+    private double knockBackReducer=0;
+    public int miniVelocity=-1;
+    public double miniReducer=0;
+    public boolean miniJump=false;
+    private boolean crash=false;
+    private boolean bounce=false;
+    private boolean freefall=false;
+    private int grace=1;
+    private boolean idle=false;
+    private boolean landing=true;
+    private boolean falling=false;
+
+    //PLATFORM RELATED
+    private int floor=-1;
+    private int wallRight=-1;
+    private int wallLeft=-1;
+    private int roof=-1;
+    private int pull=0;
+    private int push=0;
+
+    //BULGE
+    private int frame=0;
+    private int frameValue=0;
+
+    //COLOR
+    private int color=0;
+
+    //FLAT
+
+    int flash=0;
+    private boolean flat=false;
+    private int flatTimer=0;
+
+    //IMAGES
+
+    String stand1;
+    String stand2;
+    String stand3;
+    String run1;
+    String run2;
+    String run3;
+    String stand1Flip;
+    String stand2Flip;
+    String stand3Flip;
+    String run1Flip;
+    String run2Flip;
+    String run3Flip;
+
+    String jumpCrouch;
+    String jumpUp;
+    String jumpPeak;
+    String fall;
+    String fall2;
+    String landIcon;
+    String jumpCrouchFlip;
+    String jumpUpFlip;
+    String jumpPeakFlip;
+    String fallFlip;
+    String fall2Flip;
+    String landFlip;
+    
+    //POWERUP
+    private int bonusSpeed=0;
+    private int bonusJump=0;
+    
+    private int bonusWeight=4;
+    
+    private int jumpCount=0;
+    private boolean jumpCountController=true;
+    
+    private int powerUpCount=0;
+
+    public Player( int xPos, int yPos, int c)
+    {
+        x = xPos;
+        y = yPos;
+        color=c;
+        
+            stand1="Stand1";
+            stand2= "Stand2";
+            stand3= "Stand3";
+            run1= "Run1";
+            run2="Run2";
+            run3= "Run3";
+            stand1Flip="Stand1Flip";
+            stand2Flip= "Stand2Flip";
+            stand3Flip= "Stand3Flip";
+            run1Flip= "Run1Flip";
+            run2Flip="Run2Flip";
+            run3Flip= "Run3Flip";
+
+            jumpCrouch= "JumpCrouch";
+            jumpUp= "JumpUp";
+            jumpPeak= "JumpPeak";
+            fall= "Fall";
+            fall2= "Fall2";
+            landIcon= "Land";
+            jumpCrouchFlip= "JumpCrouchFlip";
+            jumpUpFlip= "JumpUpFlip";
+            jumpPeakFlip= "JumpPeakFlip";
+            fallFlip= "FallFlip";
+            fall2Flip= "Fall2Flip";
+            landFlip= "LandFlip";
+        
+
+    }// end constructor Player
+    //WHEN THE GAME CHANGES A VARIABLE
+ 
+   
+
+    public void setCrouch(boolean on)
+    {
+        crouch=on;
+    }
+
+    public void setFalling(boolean on)
+    {
+        falling=on;
+    }
+
+    public void setLanding(boolean on)
+    {
+        landing=on;
+    }
+
+    public void setGrace(int n)
+    {
+        grace=n;
+    }
+
+    public void setFloor(int n)
+    {
+        floor=n;
+    }
+
+
+    public void reduceLives()
+    {
+        crash=false;
+        
+        if (winner==0 )
+        {
+            lives--;
+            crouch=false;
+        }
+    }
+
+    public void setX(int why)
+    {
+        x=why;
+    }
+
+    public void setY(int why)
+    {
+        y=why;
+    }
+
+    public void setRight(boolean on)
+    {
+        right = on;
+    }
+
+    public void setLeft(boolean on)
+    {
+        left = on;
+    }
+
+    public void setJump(boolean on)
+    {
+        jump= on;
+
+    }
+
+    public void setKnockBack(int n)
+    {
+        knockBack= n;
+
+    }
+
+    public void setBounce(boolean on)
+    {
+        bounce=on;
+    }
+
+    public void setCrash(boolean on)
+    {
+        crash=on;
+    }
+
+    public void setReducer(int i)
+    {
+        reducer=i;
+    }
+
+
+    public void setmidAir(boolean on)
+    {
+        midAir=on;
+    }
+
+    public void animate(int n)
+    {
+        frame=n;
+    }
+
+    //WHEN THE GAME WANTS TO KNOW A VARIABLE
+   
+
+    public boolean getFalling()
+    {
+        return falling;
+    }
+
+    public boolean getLanding()
+    {
+        return landing;
+    }
+
+    public String getImage()
+    {
+       
+        return image;
+       
+    
+    }
+
+    public int getFrame()
+    {
+        return frame;
+    }
+
+    public double getReducer()
+    {
+        return reducer;
+    }
+
+   
+    public int getFloor()
+    {
+        return floor;
+    }
+    public int getX()
+    {
+        return x;//returns the player's x position
+    }// end method getX
+
+    public int getY()
+    {
+        return y;// returns the player's y position
+    }// end method getY
+    
+    public boolean isJump()
+    {
+        return jump;
+
+    }
+
+    
+    public boolean canMirAirJump()
+    {
+        return midAir;
+    }
+
+    public boolean isCrash()
+    {
+        return crash;
+    }
+
+    public boolean isFreefall()
+    {
+        return freefall;
+    }
+
+    public boolean isGoingUp()
+    {
+        return goingUp;
+    }
+
+
+
+    public void falling()
+    {
+        if (reducer>5)
+        {
+            falling=true;
+        }
+
+    }
+
+
+    public void freefall()
+    {
+        if ((floor>-1 || miniJump==true ) && (jump==false))
+        {
+            freefall=true;
+        }
+    }
+
+    public void fall()
+    {
+        if (floor>-1)
+        {
+            //jump=false;
+        }
+        if (floor==-1)
+        {
+            y=y+((int)reducer)/(grace);
+            reducer+=.3;
+            //frame=20;
+        }
+        else
+        {
+            //frame=0;
+            reducer=0;
+
+        }
+        if (roof>-1)
+        {
+            double reducerTemp=reducer;
+            reducer=reducer+((-1)*velocity-reducer);
+        }
+
+    }
+
+    public void jumpReset()
+    {
+        if (midAir=true)
+        {
+            velocity=-11;
+            reducer=0;
+            jumpCountController=true;
+            jump= true;
+            if(jumpCount>bonusJump)
+            {
+            midAir=false;
+          }
+        }
+
+    }
+
+    public void bounce()
+    {
+        if (bounce==true)
+        {
+            velocity=-13;
+            reducer=0;
+
+            jump= true;
+            bounce=false;
+            midAir=true;
+        }
+
+    }
+
+    public void setFrame()
+    {
+        
+        if (powerUpCount>6)
+        {
+            //powerUpCount=0;
+        }
+        if (floor==-1 && left == false && right==false && flat==false&&crouch==false)
+        {
+
+            frame=20;   //so there is a correct fall animation when fox walks off a platform
+
+        }
+        else
+        {
+
+            if ((left==true || right == true) && floor>-1 && flat==false&&crouch==false)
+            {
+                if (frame<4 || frame>11)
+                {
+                    frame=4; //if the fox is running, the run animation will start
+
+                }
+                frame++;
+                if (frame==11)
+                {
+                    frame=4;
+                }
+            }
+            else
+            {
+                if (frame>3 && frame<12)
+                {
+                    frame=0;//if the fox is standing, the stand animation will start
+                }
+                if (frame==3)
+                {
+                    frame=0;
+                }
+
+                else if (frame==12 && crouch==false && flat==false)
+                {
+                    frame++;
+                }
+                else if (frame==13)
+                {
+                    frame=0;
+                }
+
+                else if (frame==20)
+                {
+                    frame=4;
+                }
+                else if (frame!=20 )
+                {
+                    frame++;
+                }
+            }
+        }
+
+    }
+
+ 
+    
+    public void jump()
+    {
+        if( jump == true&&flat==false)
+        {
+            // stand=false;
+            //grounded=false;
+            //reducer=0;
+            if(jumpCountController==true)
+            {
+            jumpCount++;
+            jumpCountController=false;
+        }
+            frame=20;
+            frameValue=(Math.abs(velocity+(int)reducer))-7;
+            if (reducer<12)
+            {
+                goingUp=true;
+            }
+            else
+            {
+                goingUp=false;
+            }
+            if (x > 0 && roof==-1)
+            {
+                y= y+velocity;
+
+            }
+
+            if ( floor>-1)
+            {
+                jumpCount=0;
+                frame=12;
+                landing=true;
+                midAir=true;
+                goingUp=false;
+                jump=false;
+
+            }
+            /*
+             * 
+             * 
+            if (y<=(3*600/4))
+            {
+            reducer+=.3;
+            //reducer+=10;
+
+            //velocity=velocity+(int)reducer;
+            }
+            else
+            {
+            y=(3*600/4);
+            reducer=0;
+            frame=10;
+            midAir=true;
+            jump=false;
+
+            }//decreases the x value by 10; i.e., moves to the left
+             */
+
+        }
+    }// end method moveRight
+
+    public void knockBack()
+    {
+        if (crash==false)
+        {
+            if( knockBack == 1)
+            {
+                // stand=false;
+                //x=100;
+                if (flat==false)
+                {
+                    frame=20;
+                }
+
+                frameValue=(int).5*(Math.abs(knockBackVelocity+(int)knockBackReducer))-7;
+                x= x-knockBackVelocity+(int)knockBackReducer;
+
+                if ((-knockBackVelocity+(int)knockBackReducer)<0)
+                {
+                    if (flat==true)
+                    {
+                        knockBackReducer+=.4+bonusWeight;
+                    }
+                    else
+                    {
+                        knockBackReducer+=.7+bonusWeight;
+                    }
+                    //reducer+=10;
+
+                    //velocity=velocity+(int)reducer;
+                }
+                else
+                {
+                    //y=(3*600/4);
+                    knockBackReducer=0;
+                    if (flat==false)
+                    {
+                        frame=0;
+                    }
+                    else
+                    {
+                        frame=40;
+                    }
+                    knockBack=0;
+                    //midAir=true;
+                    //jump=false;
+
+                }//decreases the x value by 10; i.e., moves to the left
+            }
+            if( knockBack == 2)
+            {
+                // stand=false;
+                //x=100;
+                if (flat==false)
+                {
+                    frame=20;
+                }
+
+                frameValue=(int).5*(Math.abs(knockBackVelocity+(int)knockBackReducer))-7;
+                if (x < 1200)
+                {
+                    x= x+knockBackVelocity-(int)knockBackReducer;
+                }
+
+                if ((knockBackVelocity-(int)knockBackReducer)>0)
+                {
+                    if (flat==true)
+                    {
+                        knockBackReducer+=.4+bonusWeight;
+                    }
+                    else
+                    {
+                        knockBackReducer+=.7+bonusWeight;
+                    }
+                    //reducer+=10;
+
+                    //velocity=velocity+(int)reducer;
+                }
+                else
+                {
+                    //y=(3*600/4);
+                    knockBackReducer=0;
+                    if (flat==false)
+                    {
+                        frame=0;
+                    }
+                    else
+                    {
+                        frame=40;
+                    }
+                    knockBack=0;
+                    //midAir=true;
+                    //jump=false;
+
+                }//decreases the x value by 10; i.e., moves to the left
+
+            }
+
+        }// end method moveRight
+    }
+
+    public void crash()
+    {
+        if (crash==true)
+        {
+            // stand=false;
+            //x=100;
+            //flat=true;
+
+            y=y+12-2*bonusWeight;
+            crouch=true;
+
+            //frameValue=((Math.abs(12)-7));
+
+            if (floor>-1 )
+            {
+
+                frame=12;
+                flat=true;
+                flatTimer=150-(5*bonusWeight);
+                crash=false;
+                //midAir=true;
+                //jump=false;
+
+            }//decreases the x value by 10; i.e., moves to the left
+
+        }
+    }// end method moveRight
+    public void flat()
+    {
+        if (flat==true)
+        {
+            flatTimer--;
+            if(flatTimer<0)
+            {
+                frame=0;
+                crouch=false;
+                flat=false;
+            }
+        }
+    }
+
+ 
+
+    public void frame()
+    {
+        if (frame==12)
+        {
+            jumpCount=0;
+            jumpCountController=true;
+        }
+        if (right==true)
+        {
+            face=0;
+        }
+        if (left==true)
+        {
+            face=0;;
+        }
+
+        if (face==0)
+        {
+            switch (frame)
+            {
+
+                case 0: image="Stand1"; break;
+                case 1: case 3:image="Stand2";break;
+                case 2 :image="Stand3";break;
+
+                case 4: case 5: image="Run1"; break;
+                case 6: case 7: case 10: case 11: image="Run2";break;
+                case 8 : case 9:image="Run3";break;
+
+                case 12: case 13:image="Land";break;//land1
+
+                case 20: if (jump==true)
+                {
+                    if (reducer<10)
+                    {
+                        image="JumpUp";break;//jumpandfall
+                    }
+                    else if (reducer>=10 && reducer <14)
+                    {
+                        image="JumpPeak";break;//jumpandfall
+                    }
+                    else
+                    {
+                        image="Fall";break;
+                    }
+                }
+                else
+                {
+                    image="Fall";break;
+                }
+
+            }
+        }
+        else 
+        {
+            switch (frame)
+            {
+                case 0: image="Stand1Flip"; break;
+
+                case 1: case 3:image="Stand2Flip";break;
+                case 2 :image="Stand3Flip";break;
+
+                case 4: case 5: image="Run1Flip"; break;
+
+                case 6: case 7: case 10: case 11: image="Run2Flip";break;
+                case 8 : case 9:image="Run3Flip";break;
+
+                case 12: case 13:image="LandFlip";break;//land1
+
+                case 20: if (jump==true)
+                {
+                    if (reducer<10)
+                    {
+                        image="JumpUpFlip";break;//jumpandfall
+                    }
+                    else if (reducer>=10 && reducer <14)
+                    {
+                        image="JumpPeakFlip";break;//jumpandfall
+                    }
+                    else
+                    {
+                        image="FallFlip";break;
+                    }
+                }
+                else
+                {
+                    image="FallFlip";break;
+                }
+            }
+        }
+
+    }
+
+    public void draw( Graphics page )
+    {
+        if (color==0 )
+        {
+            page.setColor( new Color(220,20,60,200));
+            //flash++;
+        }
+        else 
+        {
+            page.setColor( new Color(0,191,255,200));
+            //flash++;
+        }
+        int xpoints[] = {x+5, x-10+5, x+10+5,};
+        int ypoints[] = {y-30, y-10-30, y-10-30};
+        int npoints = 3;
+        page.fillPolygon(xpoints, ypoints, npoints);
+        lifeDisplay = new JLabel("");//makes a new label to display text
+        lifeDisplay.setText(""+lives);
+        lifeDisplay.setLocation(x+5,y-60);
+        lifeDisplay.setFont(new Font("Franchise", Font.BOLD, 48));
+
+        if (color==0)
+        {
+            lifeDisplay.setForeground( new Color(220,20,60,200) );
+        }
+        else
+        {
+            lifeDisplay.setForeground( new Color(0,191,255,200) );
+        }
+
+        lifeDisplay.setVisible(true);//makes the message visible to user
+
+        /*
+        if (flat==true || crash==true)
+        {
+
+        if(flash<5)
+        {
+        page.setColor(Color.white);
+        flash++;
+        }
+        else if (flash<10)
+        {
+        if (color==0 )
+        {
+        page.setColor( new Color(220,20,60,200));
+        flash++;
+        }
+        else 
+        {
+        page.setColor( new Color(0,191,255,200));
+        flash++;
+        }
+
+        }
+        else
+        {
+        flash=0;
+        }
+        }
+
+        if (color==0 && flat!=true && crash!=true )
+        {
+        page.setColor( new Color(220,20,60,200));
+        }
+        else if (flat!=true && crash!=true )
+        {
+        page.setColor( new Color(0,191,255,200));
+        }
+        //  page.fillRect( x, y-32, 24,24);
+
+        //case 0:a=x-14;b=y-30;c=28;d=60;
+        page.fillRect( x-14, y-30, 28, 60);*/
+
+    }
+}
